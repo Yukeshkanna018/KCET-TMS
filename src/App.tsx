@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, RefreshCw, Lock, Unlock, Edit2, Save, Plus, Database } from 'lucide-react';
+import { Download, RefreshCw, Lock, Unlock, Edit2, Save, Plus, Database, Trash2 } from 'lucide-react';
 import { Student, students as allStudentsList } from './data/students';
 import { supabase } from './lib/supabase';
 import { generateScheduleLogic } from './utils/scheduler-backend';
@@ -169,6 +169,22 @@ export default function App() {
     if (error) alert("Failed to update date: " + error.message);
     else {
       setEditingDate(null);
+      fetchSchedule();
+    }
+  };
+
+  const handleDeleteDay = async (date: string) => {
+    if (!window.confirm(`Are you sure you want to delete the entire schedule for ${date}?`)) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('days')
+      .delete()
+      .eq('date', date);
+
+    if (error) alert("Failed to delete day: " + error.message);
+    else {
       fetchSchedule();
     }
   };
@@ -401,17 +417,26 @@ export default function App() {
                                     <div>{day.date}</div>
                                     <div className="text-gray-500 text-xs font-normal">{day.day}</div>
                                     {isAdmin && (
-                                      <button
-                                        onClick={() => {
-                                          setEditingDate(day.date);
-                                          setDateInput(day.date);
-                                          setDayNameInput(day.day);
-                                        }}
-                                        className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 transition-opacity"
-                                        title="Edit Date"
-                                      >
-                                        <Edit2 className="h-3 w-3" />
-                                      </button>
+                                      <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity">
+                                        <button
+                                          onClick={() => {
+                                            setEditingDate(day.date);
+                                            setDateInput(day.date);
+                                            setDayNameInput(day.day);
+                                          }}
+                                          className="text-gray-400 hover:text-blue-500"
+                                          title="Edit Date"
+                                        >
+                                          <Edit2 className="h-3 w-3" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteDay(day.date)}
+                                          className="text-gray-400 hover:text-red-500"
+                                          title="Delete Day"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </button>
+                                      </div>
                                     )}
                                   </div>
                                 )}
