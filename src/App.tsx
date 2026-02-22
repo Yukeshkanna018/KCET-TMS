@@ -505,6 +505,9 @@ export default function App() {
             </table>
           </div>
         </div>
+        <footer className="mt-8 text-center text-gray-400 text-xs pb-4">
+          Developed by Santhoshkanna
+        </footer>
       </div>
     </div>
   );
