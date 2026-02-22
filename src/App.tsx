@@ -28,6 +28,9 @@ export default function App() {
   const [themeInput, setThemeInput] = useState("");
   const [editingRole, setEditingRole] = useState<number | null>(null);
   const [roleInput, setRoleInput] = useState(""); // Roll No
+  const [editingDate, setEditingDate] = useState<string | null>(null);
+  const [dateInput, setDateInput] = useState("");
+  const [dayNameInput, setDayNameInput] = useState("");
   const [loading, setLoading] = useState(true);
 
   // New Month Generation State
@@ -139,6 +142,33 @@ export default function App() {
     if (error) alert("Failed to update role: " + error.message);
     else {
       setEditingRole(null);
+      fetchSchedule();
+    }
+  };
+
+  const handleUpdateDate = async (oldDate: string) => {
+    // 1. Check if the new date already exists
+    if (dateInput !== oldDate) {
+      const { data: existing } = await supabase
+        .from('days')
+        .select('date')
+        .eq('date', dateInput)
+        .single();
+
+      if (existing) {
+        alert("This date already exists in the schedule.");
+        return;
+      }
+    }
+
+    const { error } = await supabase
+      .from('days')
+      .update({ date: dateInput, day_name: dayNameInput })
+      .eq('date', oldDate);
+
+    if (error) alert("Failed to update date: " + error.message);
+    else {
+      setEditingDate(null);
       fetchSchedule();
     }
   };
@@ -347,8 +377,44 @@ export default function App() {
                               rowSpan={day.roles.length}
                             >
                               <div className="sticky top-0">
-                                <div>{day.date}</div>
-                                <div className="text-gray-500 text-xs font-normal">{day.day}</div>
+                                {editingDate === day.date ? (
+                                  <div className="flex flex-col gap-2">
+                                    <input
+                                      value={dateInput}
+                                      onChange={(e) => setDateInput(e.target.value)}
+                                      className="border rounded p-1 text-xs w-full focus:ring-1 focus:ring-blue-500 outline-none"
+                                      placeholder="DD.MM.YYYY"
+                                    />
+                                    <input
+                                      value={dayNameInput}
+                                      onChange={(e) => setDayNameInput(e.target.value)}
+                                      className="border rounded p-1 text-xs w-full focus:ring-1 focus:ring-blue-500 outline-none"
+                                      placeholder="Day Name"
+                                    />
+                                    <div className="flex gap-1">
+                                      <button onClick={() => handleUpdateDate(day.date)} className="text-[10px] bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600">Save</button>
+                                      <button onClick={() => setEditingDate(null)} className="text-[10px] bg-gray-300 px-2 py-1 rounded hover:bg-gray-400">Cancel</button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="group relative pr-4">
+                                    <div>{day.date}</div>
+                                    <div className="text-gray-500 text-xs font-normal">{day.day}</div>
+                                    {isAdmin && (
+                                      <button
+                                        onClick={() => {
+                                          setEditingDate(day.date);
+                                          setDateInput(day.date);
+                                          setDayNameInput(day.day);
+                                        }}
+                                        className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 transition-opacity"
+                                        title="Edit Date"
+                                      >
+                                        <Edit2 className="h-3 w-3" />
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </td>
                             <td
