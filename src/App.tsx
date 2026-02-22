@@ -211,7 +211,7 @@ export default function App() {
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Toastmasters Schedule</h1>
-            <p className="mt-2 text-gray-600">ECE-B Class • Connected to Supabase</p>
+            <p className="mt-2 text-gray-600">ECE-B Class</p>
           </div>
           <div className="flex gap-4">
             {!isAdmin ? (
@@ -387,9 +387,9 @@ export default function App() {
                         )}
                         <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-500 border border-gray-200">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleEntry.role.startsWith('Speaker') ? 'bg-green-100 text-green-800' :
-                              roleEntry.role.startsWith('Evaluator') ? 'bg-blue-100 text-blue-800' :
-                                roleEntry.role.startsWith('TT') ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-gray-100 text-gray-800'
+                            roleEntry.role.startsWith('Evaluator') ? 'bg-blue-100 text-blue-800' :
+                              roleEntry.role.startsWith('TT') ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
                             }`}>
                             {roleEntry.role}
                           </span>
